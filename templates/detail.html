@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ impianto.nome or impianto.comune }} · BenzinaChiara{% endblock %}
+{% block content %}
+<a class="back-link" href="/impianti">← Tutti gli impianti</a>
+<section class="detail-hero">
+  <div><span class="badge">{{ impianto.bandiera or "Indipendente" }}</span><p class="eyebrow">{{ impianto.tipo_impianto or "DISTRIBUTORE" }}</p>
+    <h1>{{ impianto.nome or impianto.gestore or "Impianto carburanti" }}</h1><p>{{ impianto.indirizzo }} · {{ impianto.comune }} ({{ impianto.provincia }})</p></div>
+  {% if request.session.get("user_id") %}
+  <form action="/impianti/{{ impianto.id }}/preferiti" method="post"><button class="button button-outline" type="submit">☆ Salva tra i preferiti</button></form>
+  {% endif %}
+</section>
+<div class="two-column">
+  <section class="card">
+    <p class="eyebrow">LISTINO</p><h2>Prezzi comunicati</h2>
+    {% for prezzo in impianto.prices %}
+      <div class="price-row detail-price"><span>{{ prezzo.carburante }} · {{ "Self" if prezzo.is_self else "Servito" }}<small>Aggiornato {{ prezzo.data_comunicazione.strftime("%d/%m/%Y %H:%M") }}</small></span><strong>€ {{ "%.3f"|format(prezzo.prezzo) }}/l</strong></div>
+    {% else %}<p class="muted">Non ci sono ancora prezzi registrati.</p>{% endfor %}
+  </section>
+  <section class="card weather-card">
+    <p class="eyebrow">METEO IN ZONA</p><h2>Condizioni attuali</h2>
+    {% if weather %}<p class="temperature">{{ weather.temperature_2m }}°</p><p>Precipitazioni {{ weather.precipitation }} mm</p>
+    {% elif weather_error %}<p class="muted">{{ weather_error }}</p>
+    {% else %}<p class="muted">Coordinate non disponibili per questo impianto.</p>{% endif %}
+    <small>Fonte: Open-Meteo</small>
+  </section>
+</div>
+<section class="section">
+  <div class="section-heading"><div><p class="eyebrow">COMMUNITY</p><h2>Segnalazioni e recensioni</h2></div><span class="muted">{{ segnalazioni|length }} contributi visibili</span></div>
+  {% if request.session.get("user_id") %}
+  <form class="card report-form" action="/impianti/{{ impianto.id }}/segnalazioni" method="post">
+    <label for="testo_libero">Com'è la situazione? Prezzo reale, code, servizi o colonnine</label>
+    <textarea id="testo_libero" name="testo_libero" minlength="5" maxlength="2000" required placeholder="Condividi un'informazione utile alla community..."></textarea>
+    <button class="button" type="submit">Invia segnalazione</button>
+  </form>
+  {% else %}<p class="callout">Per inviare una segnalazione, <a href="/auth/login">accedi al tuo account</a>.</p>{% endif %}
+  <div class="report-list">
+  {% for report in segnalazioni %}
+    <article class="card report-card">
+      <div class="report-heading"><strong>{{ report.user.display_name }}</strong><span class="badge badge-{{ report.stato.value }}">{{ report.stato.value.replace("_", " ") }}</span></div>
+      <p>{{ report.testo_libero }}</p><small>{{ report.created_at.strftime("%d/%m/%Y %H:%M") }}</small>
+      {% if request.session.get("user_id") == report.id_utente %}
+      <div class="report-actions">
+        <form action="/segnalazioni/{{ report.id }}/modifica" method="post" class="edit-form">
+          <label for="edit-{{ report.id }}">Modifica segnalazione</label><textarea id="edit-{{ report.id }}" name="testo_libero" minlength="5" maxlength="2000" required>{{ report.testo_libero }}</textarea>
+          <button class="button button-small" type="submit">Salva</button>
+        </form>
+        <form action="/segnalazioni/{{ report.id }}/elimina" method="post"><button class="button button-danger button-small" type="submit">Elimina</button></form>
+      </div>
+      {% endif %}
+    </article>
+  {% else %}<div class="empty-state"><p>Ancora nessuna segnalazione. Puoi essere il primo!</p></div>{% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Accedi · BenzinaChiara{% endblock %}
+{% block content %}
+<section class="auth-wrap"><form class="card auth-card" action="/auth/login" method="post">
+  <p class="eyebrow">BENTORNATO</p><h1>Accedi</h1>
+  {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
+  <label>Email<input type="email" name="email" autocomplete="email" required></label>
+  <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+  <button class="button" type="submit">Accedi</button>
+  <p class="muted">Non hai un account? <a href="/auth/registrazione">Registrati</a></p>
+</form></section>
+{% endblock %}

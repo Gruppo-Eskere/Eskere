@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Amministrazione · BenzinaChiara{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="section-heading"><div><p class="eyebrow">GESTIONE</p><h1>Area amministratore</h1></div><a class="button" href="/admin/importazione">Importa listino</a></div>
+  <form class="card admin-form" action="/admin/impianti" method="post">
+    <h2>Nuovo impianto</h2>
+    <div class="filter-grid">
+      <label>ID MIMIT<input name="id_impianto" required></label><label>Nome<input name="nome"></label>
+      <label>Gestore<input name="gestore"></label><label>Bandiera<input name="bandiera"></label>
+      <label>Tipo impianto<input name="tipo_impianto"></label><label>Indirizzo<input name="indirizzo"></label>
+      <label>Comune<input name="comune" required></label><label>Provincia<input name="provincia" maxlength="8" required></label>
+      <label>Latitudine<input type="number" step="any" name="latitudine"></label><label>Longitudine<input type="number" step="any" name="longitudine"></label>
+    </div><button class="button" type="submit">Crea impianto</button>
+  </form>
+  <h2 class="section-title">Impianti e listini</h2>
+  {% for impianto in impianti %}
+  <article class="card admin-card">
+    <div class="section-heading"><div><h3>{{ impianto.nome or impianto.comune }}</h3><p>{{ impianto.id_impianto }} · {{ impianto.comune }} ({{ impianto.provincia }})</p></div>
+      <form action="/admin/impianti/{{ impianto.id }}/elimina" method="post" onsubmit="return confirm('Eliminare impianto e dati collegati?')"><button class="button button-danger button-small" type="submit">Elimina</button></form>
+    </div>
+    <form class="filter-grid admin-edit" action="/admin/impianti/{{ impianto.id }}/modifica" method="post">
+      <label>Nome<input name="nome" value="{{ impianto.nome }}"></label><label>Gestore<input name="gestore" value="{{ impianto.gestore }}"></label>
+      <label>Bandiera<input name="bandiera" value="{{ impianto.bandiera }}"></label><label>Tipo<input name="tipo_impianto" value="{{ impianto.tipo_impianto }}"></label>
+      <label>Indirizzo<input name="indirizzo" value="{{ impianto.indirizzo }}"></label><label>Comune<input name="comune" value="{{ impianto.comune }}" required></label>
+      <label>Provincia<input name="provincia" value="{{ impianto.provincia }}" required></label>
+      <label>Latitudine<input type="number" step="any" name="latitudine" value="{{ impianto.latitudine or '' }}"></label>
+      <label>Longitudine<input type="number" step="any" name="longitudine" value="{{ impianto.longitudine or '' }}"></label>
+      <button class="button button-small" type="submit">Salva anagrafica</button>
+    </form>
+    {% for prezzo in impianto.prices %}
+      <form class="price-edit" action="/admin/prezzi/{{ prezzo.id }}/modifica" method="post">
+        <input aria-label="Carburante" name="carburante" value="{{ prezzo.carburante }}" required>
+        <input aria-label="Prezzo" type="number" name="prezzo" step="0.001" min="0.001" value="{{ prezzo.prezzo }}" required>
+        <label class="check-label"><input type="checkbox" name="is_self" value="true" {% if prezzo.is_self %}checked{% endif %}> Self</label>
+        <button class="button button-small" type="submit">Aggiorna</button>
+        <button class="button button-danger button-small" formaction="/admin/prezzi/{{ prezzo.id }}/elimina">Elimina</button>
+      </form>
+    {% endfor %}
+    <form class="price-edit" action="/admin/impianti/{{ impianto.id }}/prezzi" method="post">
+      <input aria-label="Nuovo carburante" name="carburante" placeholder="Carburante" required>
+      <input aria-label="Nuovo prezzo" type="number" name="prezzo" step="0.001" min="0.001" placeholder="€/l" required>
+      <label class="check-label"><input type="checkbox" name="is_self" value="true" checked> Self</label><button class="button button-small" type="submit">Aggiungi prezzo</button>
+    </form>
+  </article>
+  {% else %}<p class="empty-state">Non sono presenti impianti.</p>{% endfor %}
+</section>
+<section class="section">
+  <div class="section-heading"><div><p class="eyebrow">MODERAZIONE</p><h2>Segnalazioni</h2></div></div>
+  {% for report in segnalazioni %}
+  <article class="card moderation-card"><p><strong>{{ report.impianto.nome or report.impianto.comune }}</strong> · {{ report.user.display_name }}</p>
+    <p>{{ report.testo_libero }}</p>
+    <form action="/admin/segnalazioni/{{ report.id }}/moderazione" method="post">
+      <select name="stato"><option value="in_attesa" {% if report.stato.value == "in_attesa" %}selected{% endif %}>In attesa</option><option value="approvata" {% if report.stato.value == "approvata" %}selected{% endif %}>Approva</option><option value="rifiutata" {% if report.stato.value == "rifiutata" %}selected{% endif %}>Rifiuta</option></select>
+      <button class="button button-small" type="submit">Salva moderazione</button>
+    </form>
+  </article>
+  {% else %}<p class="muted">Nessuna segnalazione da moderare.</p>{% endfor %}
+</section>
+{% endblock %}

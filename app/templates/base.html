@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}BenzinaChiara{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">Benzina<span>Chiara</span></a>
+    <nav aria-label="Navigazione principale">
+      <a href="/impianti">Impianti</a>
+      {% if request.session.get("user_id") %}
+        <a href="/admin/">Area admin</a>
+        <form class="inline" action="/auth/logout" method="post"><button class="link-button" type="submit">Esci</button></form>
+      {% else %}
+        <a href="/auth/login">Accedi</a>
+        <a class="nav-cta" href="/auth/registrazione">Registrati</a>
+      {% endif %}
+    </nav>
+  </header>
+  <main class="container">{% block content %}{% endblock %}</main>
+  <footer class="site-footer">Dati dimostrativi e prezzi da verificare sul posto · Progetto universitario MMQS</footer>
+</body>
+</html>

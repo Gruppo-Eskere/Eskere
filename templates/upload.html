@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Importa prezzi · BenzinaChiara{% endblock %}
+{% block content %}
+<section class="auth-wrap"><div class="card auth-card">
+  <a class="back-link" href="/admin/">← Area amministratore</a><p class="eyebrow">AGGIORNAMENTO MASSIVO</p><h1>Importa prezzi</h1>
+  <p class="muted">CSV separato da punto e virgola oppure JSON con un array di record. Limite 2 MB.</p>
+  {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
+  {% if result %}<p class="success-message" role="status">{{ result }}</p>{% endif %}
+  <form action="/admin/importazione" method="post" enctype="multipart/form-data">
+    <label>File aggiornamento<input type="file" name="file" accept=".csv,.json" required></label>
+    <button class="button" type="submit">Valida e aggiorna</button>
+  </form>
+</div></section>
+{% endblock %}

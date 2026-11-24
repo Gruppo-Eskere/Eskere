@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Confronta prezzi carburante · BenzinaChiara{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">PREZZI CARBURANTI · MIMIT</p>
+  <h1>Trova il carburante<br><span>al prezzo giusto.</span></h1>
+  <p>Confronta gli impianti nella tua zona e consulta le segnalazioni della community.</p>
+  <a class="button button-light" href="#ricerca">Cerca un impianto ↓</a>
+</section>
+<section id="ricerca" class="section">
+  <div class="section-heading">
+    <div><p class="eyebrow">ESPLORA</p><h2>Impianti e prezzi</h2></div>
+    <span class="muted">{{ impianti|length }} risultati · dal meno caro</span>
+  </div>
+  <form class="filter-grid card" action="/impianti" method="get">
+    <label>Comune<input name="comune" value="{{ filters.comune }}" placeholder="Es. Torino"></label>
+    <label>Provincia<input name="provincia" value="{{ filters.provincia }}" maxlength="2" placeholder="TO"></label>
+    <label>Bandiera<input name="bandiera" value="{{ filters.bandiera }}" placeholder="Tutte"></label>
+    <label>Carburante<select name="carburante">
+      <option value="">Tutti</option>
+      {% for fuel in ["Benzina", "Gasolio", "GPL", "Metano"] %}
+        <option value="{{ fuel }}" {% if filters.carburante|lower == fuel|lower %}selected{% endif %}>{{ fuel }}</option>
+      {% endfor %}
+    </select></label>
+    <label>Modalità<select name="modalita">
+      <option value="">Self e servito</option>
+      <option value="self" {% if filters.modalita == "self" %}selected{% endif %}>Self</option>
+      <option value="servito" {% if filters.modalita == "servito" %}selected{% endif %}>Servito</option>
+    </select></label>
+    <button class="button" type="submit">Applica filtri</button>
+  </form>
+  {% if impianti %}
+    <div class="station-grid">
+      {% for impianto in impianti %}
+      <article class="card station-card">
+        <div class="station-top"><span class="badge">{{ impianto.bandiera or "Indipendente" }}</span><span class="muted">{{ impianto.provincia }}</span></div>
+        <h3><a href="/impianti/{{ impianto.id }}">{{ impianto.nome or impianto.gestore or "Impianto carburanti" }}</a></h3>
+        <p>{{ impianto.indirizzo }} · {{ impianto.comune }}</p>
+        <div class="price-list">
+          {% for prezzo in impianto.prices %}
+          <div class="price-row"><span>{{ prezzo.carburante }} <small>{{ "Self" if prezzo.is_self else "Servito" }}</small></span><strong>€ {{ "%.3f"|format(prezzo.prezzo) }}/l</strong></div>
+          {% else %}<p class="muted">Prezzi non ancora disponibili</p>{% endfor %}
+        </div>
+        <a class="text-link" href="/impianti/{{ impianto.id }}">Dettaglio e segnalazioni →</a>
+      </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state card"><h3>Nessun impianto trovato</h3><p>Modifica i filtri oppure torna a vedere tutti gli impianti.</p><a href="/impianti" class="text-link">Rimuovi filtri →</a></div>
+  {% endif %}
+</section>
+{% endblock %}

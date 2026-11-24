@@ -1,0 +1,5 @@
+idImpianto;Gestore;Bandiera;Tipo Impianto;Nome Impianto;Indirizzo;Comune;Provincia;Latitudine;Longitudine
+DEMO-TO-001;Gestione Demo;Demo Fuel;Stradale;Stazione Demo Dora;Corso Esempio 10;Torino;TO;45.08;7.68
+DEMO-CN-002;Gestione Demo;Carburanti Test;Stradale;Stazione Demo Langhe;Via Fittizia 22;Alba;CN;44.70;8.03
+DEMO-BO-003;Gestione Demo;Rete Simulata;Stradale;Stazione Demo Reno;Via Prova 5;Bologna;BO;44.50;11.34
+DEMO-TO-004;Gestione Demo;Demo Fuel;Autostradale;Stazione Demo Collina;Tangenziale 2;Moncalieri;TO;45.00;7.68

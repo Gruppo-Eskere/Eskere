@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Registrati · BenzinaChiara{% endblock %}
+{% block content %}
+<section class="auth-wrap"><form class="card auth-card" action="/auth/registrazione" method="post">
+  <p class="eyebrow">COMMUNITY</p><h1>Crea un account</h1>
+  {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
+  <label>Nome visualizzato<input name="display_name" minlength="2" maxlength="80" autocomplete="nickname" required></label>
+  <label>Email<input type="email" name="email" maxlength="254" autocomplete="email" required></label>
+  <label>Password<input type="password" name="password" minlength="8" autocomplete="new-password" required></label>
+  <button class="button" type="submit">Registrati</button>
+  <p class="muted">Hai già un account? <a href="/auth/login">Accedi</a></p>
+</form></section>
+{% endblock %}
